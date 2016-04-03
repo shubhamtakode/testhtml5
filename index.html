@@ -1,80 +1,142 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <title>Timer with Persistent Storage</title>
-  <meta charset="utf-8">
-  <style type="text/css">
-    P#time {
-      font-size: 48pt;
-      font-family: courier;
-      margin: 0px auto;
-      color: gray;
-    }
-  </style>
-  <script type="text/javascript">
-    timer = null;
+    <head>
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+        <link rel="stylesheet" href="./material.min.css">
+        <link rel="stylesheet" href="./crayon.min.css">
+<!--        <link rel="stylesheet" href="./monaco.css">
+        <link rel="stylesheet" href="./classic.css">-->
+        <script src="./material.min.js"></script>
+        <script src="./jquery-2.2.2.min.js"></script>
+        <script src="./main.js"></script>
+<!--        <script src="./crayon.min.js?ver=_2.7.2_beta"></script>-->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    function get_time() {
-      var now = new Date;
-      return now.getTime();
-    }
+        <style>
+            .demo-card-wide.mdl-card {
+                width: 100%;
+/*                padding: 40px;*/
+                background: grey;
+            }
+            .demo-card-wide > .mdl-card__title {
+                color: #fff;
+                height: 176px;
+                background: url('../assets/demos/welcome_card.jpg') center / cover;
+            }
+            .demo-card-wide > .mdl-card__menu {
+                color: #fff;
+            }
+            .mdl-layout__drawer-button > .material-icons{
+                margin-top: 12px;
+            }
+            .page-content{
+                overflow: hidden;
+                margin-right: 8px;
+            }
 
-    function show() {
-      var t = timer ? get_time() - base : total;
-      var s = Math.round(t/1000);
-      var m = Math.floor(s/60);
-      var h = Math.floor(m/60);
-      s = s%60;
-      if (s < 10) s = "0"+s;
-      m = m%60;
-      if (m < 10) m = "0"+m;
-      if (h < 10) h = "0"+h;
-      p.innerHTML = h+":"+m+":"+s;
-    }
+            .demo-card-wide.mdl-card {
+                margin-left: 8px;
+                margin-top: 8px;
+                margin-bottom: 15px;
+            }
+/*            .demo-card-wide > .mdl-card__menu {
+                color: #3f51b5;
+            }*/
+            .demo-card-wide.mdl-card{
+                background: #EAEAEA;
+            }
+            .mdl-card__title {
+                padding: 0px;
+            }
+            .mdl-card__title-text{
+                background-color: rgba(85, 85, 86, 0.4);
+                width: 100%;
+                padding: 15px;
+            }
+            .sharedaddy {
+                display:none;
+            }
+/*            .demo-card-wide > .mdl-card__title{
+                color: #535662;
+            }*/
+.spinner-position{
+    text-align: center;
+    margin: 132px;
+}
+.excerpt-text{
+    max-height: 230px;
+}
+        </style>
 
-    function update() {
-      show();
-      dt = 1000 - (get_time()-base)%1000;
-      timer = setTimeout(update, dt);
-    }
+    </head>
 
-    function start() {
-      base = get_time() - total;
-      localStorage.base = base;
-      delete localStorage.total;
-      p.style.color = "black";
-      update();
-    }
 
-    function stop() {
-      clearTimeout(timer);
-      timer = null;
-      total = get_time() - base;
-      delete localStorage.base;
-      localStorage.total = total;
-      p.style.color = "gray";
-    }
+    <body>
+        <!-- Always shows a header, even in smaller screens. -->
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                    <!-- Title -->
+                    <span class="mdl-layout-title">ShubhsBlog.com</span>
+                    <!-- Add spacer, to align navigation to the right 
+                      <div class="mdl-layout-spacer"></div>
+                    -->
 
-    function key_handler(e) {
-      if (e.keyCode != 32) return true;
-      if (timer) stop(); else start();
-    }
+                    <!-- Navigation. We hide it in small screens. -->
+                    <!-- <nav class="mdl-navigation mdl-layout--large-screen-only">
+                       <a class="mdl-navigation__link" href="">Link</a>
+                       <a class="mdl-navigation__link" href="">Link</a>
+                       <a class="mdl-navigation__link" href="">Link</a>
+                       <a class="mdl-navigation__link" href="">Link</a>
+                     </nav> -->
+                </div>
+            </header>
+            <div class="mdl-layout__drawer">
+                <span class="mdl-layout-title">Menu</span>
+                <nav class="mdl-navigation">
+                    <a class="mdl-navigation__link" href="#post-listings">All Posts</a>
+<!--                    <a class="mdl-navigation__link" href="">Link</a>
+                    <a class="mdl-navigation__link" href="">Link</a>
+                    <a class="mdl-navigation__link" href="">Link</a>-->
+                </nav>
+            </div>
+            <main class="mdl-layout__content" id="mdl_content">
+                <div class="page-content" id="post-listings"><!-- Your content goes here -->
 
-    function init() {
-      p = document.getElementById("time");
-      total = localStorage.total ? localStorage.total : 0.0;
-      show();
-      if (localStorage.base) {
-        total = get_time() - localStorage.base;
-        start();
-      }
-      window.onkeydown = key_handler;
-    }
-  </script>
-</head>
-<body onload="init()">
-  <p id="time">loading &hellip;
-  <p>Use the SPACE key to start/stop the timer.<br>
-  It will magically keep working, even while you are logged out.
-</body>
+                    <div class="spinner-position" id="materail-spinner">
+                    <div class=" mdl-spinner mdl-js-spinner is-active"></div>
+                    </div>
+                    
+                    
+<!--                    <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title" style="background: url('./1.jpg') center / cover;">
+                            <h2 class="mdl-card__title-text">Welcome</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Mauris sagittis pellentesque lacus eleifend lacinia...
+                        </div>
+                        <div class="mdl-card__actions mdl-card--border">
+                            <a style="float: right;" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                Get Started
+                            </a>
+                        </div>
+                        <div class="mdl-card__menu">
+                            <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                                <i class="material-icons">share</i>
+                            </button>
+                        </div>
+                    </div>-->
+
+
+                </div>
+                <div style=" display: none; text-align:center; padding:20px; " id="loadmore-button">
+                <button onclick="send_get()" class="mdl-button mdl-js-button mdl-button--raised">
+  Load More
+</button>
+                </div>
+            </main>
+        </div>
+
+    </body>
 </html>
